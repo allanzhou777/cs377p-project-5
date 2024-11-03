@@ -6,12 +6,16 @@
 #include <pthread.h>
 
 #define _USE_MATH_DEFINES
+
+
 double actual_pi = M_PI;
 int num_threads = 16;
-int steps = 100000;
-int iterations = 100;
+int steps = 1000000000;
+int iterations = 10;
 double pi_approx = 0.0;
 double step_size;
+pthread_mutex_t pi_mutex;
+
 
 struct ThreadData
 {
@@ -37,7 +41,10 @@ void *pi_approximation(void *arg)
     x += step_size * num_threads;
   }
 
+  // pthread_mutex_lock (&pi_mutex);
   pi_approx += local_sum * 2;
+  // pthread_mutex_unlock (&pi_mutex);
+
 
   pthread_exit(NULL);
 }

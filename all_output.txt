@@ -43,3 +43,23 @@ Final pi approximation (100000 steps): 3.13507174728665871655
 -----16 threads-----
 Avg elapsed time = 338443 nanoseconds
 Final pi approximation (100000 steps): 3.13507174743816152684
+
+
+
+---- using pthreads and locks -----
+
+-----1 threads-----
+Avg elapsed time = 978589 nanoseconds
+Final pi approximation (100000 steps): 3.13507174624903761639
+-----2 threads-----
+Avg elapsed time = 533054 nanoseconds
+Final pi approximation (100000 steps): 3.13507174777679331612
+-----4 threads-----
+Avg elapsed time = 231886 nanoseconds
+Final pi approximation (100000 steps): 3.13507174761297013887
+-----8 threads-----
+Avg elapsed time = 215917 nanoseconds
+Final pi approximation (100000 steps): 3.13507174728665871655
+-----16 threads-----
+Avg elapsed time = 220170 nanoseconds
+Final pi approximation (100000 steps): 3.13507174743816152684
