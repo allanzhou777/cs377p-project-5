@@ -1,17 +1,20 @@
-#include <pthread.h> /*used in other parts of the assignment */
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdint.h> /* for uint64  */
-#include <time.h>   /* for clock_gettime */
-#include <atomic>   /*used in other parts of the assignment */
+#include <stdint.h>
+#include <time.h>
+#include <pthread.h>
 
 #define _USE_MATH_DEFINES
 double actual_pi = M_PI;
-int numThreads = 4;
+int num_threads = 16;
+int steps = 100000;
+int iterations = 100;
+double pi_approx = 0.0;
+double step_size;
 
-
-struct ThreadData {
+struct ThreadData
+{
   int thread_id;
 };
 
@@ -20,64 +23,65 @@ double f(double x)
   return (1.0 / sqrt(1 - x * x));
 }
 
+// approximate pi
+void *pi_approximation(void *arg)
+{
+  struct ThreadData *data = (struct ThreadData *)arg;
+  int thread_id = data->thread_id;
+  double local_sum = 0.0;
+  double x = thread_id * step_size;
 
-
-
-
-
-double pi_approximation (int steps) {
-  double x = 0;
-  double pi_approx = 0.0;
-  double step_size = 1.0 / steps;
-  for (int i = 0; i < steps; i++) {
-    pi_approx += step_size * f(x);
-    x += step_size;
+  for (int i = thread_id; i < steps; i += num_threads)
+  {
+    local_sum += step_size * f(x);
+    x += step_size * num_threads;
   }
-  return pi_approx * 2;
+
+  pi_approx += local_sum * 2;
+
+  pthread_exit(NULL);
 }
-
-
-
 
 int main(int argc, char *argv[])
 {
-  uint64_t execTime; /*time in nanoseconds */
+  uint64_t execTime;
   struct timespec tick, tock;
+  step_size = 1.0 / steps;
+
+  pthread_t threads[num_threads];            // array of thread identifiers
+  struct ThreadData threadData[num_threads]; // array to hold thread data
+
   clock_gettime(CLOCK_MONOTONIC_RAW, &tick);
 
+  for (int iter = 0; iter < iterations; iter++)
+  {
+    int rc;
+    pi_approx = 0.0;
 
-
-  int l = 10; 
-  int r = 10000000;
-  double pi_l = actual_pi * 0.99;
-  double pi_r = actual_pi * 1.01;
-
-  while (l < r) {
-    int m = l / 2 + r / 2;
-    double pi_approx_M = pi_approximation (m);
-    // printf("l: %d     r: %d      pi_approx for m = %d: %.5f\n", l, r, m, pi_approx_M);
-    // printf ("pi_l: %d\n pi_r: %d\n", pi_l, pi_r);
-    if (pi_l <= pi_approx_M && pi_approx_M <= pi_r) {
-      r = m - 1;
+    // for a single iteration, run each computation in num_threads threads
+    for (int i = 0; i < num_threads; i++)
+    {
+      threadData[i].thread_id = i;
+      if ((rc = pthread_create(&threads[i], NULL, pi_approximation, &threadData[i])))
+      {
+        fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+        return EXIT_FAILURE;
+      }
     }
-    else {
-      l = m + 1;
+
+    // wait for all threads to complete
+    for (int i = 0; i < num_threads; i++)
+    {
+      pthread_join(threads[i], NULL);
     }
   }
-
-
 
   clock_gettime(CLOCK_MONOTONIC_RAW, &tock);
   execTime = 1000000000 * (tock.tv_sec - tick.tv_sec) + tock.tv_nsec - tick.tv_nsec;
 
+  printf("-----%d threads-----\n", num_threads);
+  printf("Avg elapsed time = %llu nanoseconds\n", (long long unsigned int)execTime / iterations);
+  printf("Final pi approximation (%d steps): %.20f\n", steps, pi_approx);
 
-
-
-
-
-  printf("elapsed process CPU time = %llu nanoseconds\n", (long long unsigned int)execTime);
-  printf("pi_approximation (%d iterations): %.6f\n", (l + r)/2, pi_approximation ((l + r) / 2));
-  // printf("sequentially derived pi: %.20f\n", pi);
-  // printf("actual pi:               %.20f\n", actual_pi);
-  return 0;
+  return EXIT_SUCCESS;
 }
