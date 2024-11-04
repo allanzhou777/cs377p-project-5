@@ -26,7 +26,8 @@ l: 4257     r: 4258      pi_approx for m = 4257: 3.11017
 
 
 
----- using pthreads -----
+
+---- part 3 - using pthreads -----
 
 -----1 threads-----
 Avg elapsed time = 951450 nanoseconds
@@ -46,7 +47,8 @@ Final pi approximation (100000 steps): 3.13507174743816152684
 
 
 
----- using pthreads and locks -----
+
+---- part 4 - using pthreads and locks -----
 
 -----1 threads-----
 Avg elapsed time = 978589 nanoseconds
@@ -63,3 +65,44 @@ Final pi approximation (100000 steps): 3.13507174728665871655
 -----16 threads-----
 Avg elapsed time = 220170 nanoseconds
 Final pi approximation (100000 steps): 3.13507174743816152684
+
+
+
+
+----- part 5 - using atomic adds without mutex -----
+
+-----1 threads-----
+Avg elapsed time = 790164 nanoseconds
+Final pi approximation (100000 steps): 3.13507174624903095506
+-----2 threads-----
+Avg elapsed time = 412984 nanoseconds
+Final pi approximation (100000 steps): 3.13507174777679020750
+-----4 threads-----
+Avg elapsed time = 237677 nanoseconds
+Final pi approximation (100000 steps): 3.13507174761296880661
+-----8 threads-----
+Avg elapsed time = 229199 nanoseconds
+Final pi approximation (100000 steps): 3.13507174728665871655
+-----16 threads-----
+Avg elapsed time = 280002 nanoseconds
+Final pi approximation (100000 steps): 3.13507174743814642781
+
+
+
+----- part 6 - using false-sharing in arr_sum[] -----
+
+-----1 threads-----
+Avg elapsed time = 909623 nanoseconds
+Final pi approximation (100000 steps): 3.13507174624903095506
+-----2 threads-----
+Avg elapsed time = 591767 nanoseconds
+Final pi approximation (100000 steps): 3.13507174777679020750
+-----4 threads-----
+Avg elapsed time = 225736 nanoseconds
+Final pi approximation (100000 steps): 3.13507174761296880661
+-----8 threads-----
+Avg elapsed time = 216683 nanoseconds
+Final pi approximation (100000 steps): 3.13507174728665871655
+-----16 threads-----
+Avg elapsed time = 257291 nanoseconds
+Final pi approximation (100000 steps): 3.13507174743814642781

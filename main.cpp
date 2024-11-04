@@ -4,17 +4,21 @@
 #include <stdint.h>
 #include <time.h>
 #include <pthread.h>
+#include <atomic>
 
 #define _USE_MATH_DEFINES
 
 
 double actual_pi = M_PI;
 int num_threads = 16;
-int steps = 1000000000;
-int iterations = 10;
-double pi_approx = 0.0;
+int steps = 100000;
+int iterations = 100;
+// std::atomic<double> pi_approx{0.0};
+// double pi_approx = 0.0;
 double step_size;
 pthread_mutex_t pi_mutex;
+double *sum_arr;
+
 
 
 struct ThreadData
@@ -42,8 +46,11 @@ void *pi_approximation(void *arg)
   }
 
   // pthread_mutex_lock (&pi_mutex);
-  pi_approx += local_sum * 2;
+  // pi_approx += local_sum * 2;
+  // auto current = pi_approx.load();
+  // while (!pi_approx.compare_exchange_weak(current, current + local_sum * 2));
   // pthread_mutex_unlock (&pi_mutex);
+  sum_arr[thread_id] = local_sum * 2;
 
 
   pthread_exit(NULL);
@@ -57,13 +64,18 @@ int main(int argc, char *argv[])
 
   pthread_t threads[num_threads];            // array of thread identifiers
   struct ThreadData threadData[num_threads]; // array to hold thread data
+  sum_arr = (double *)malloc(num_threads * sizeof(double));
+  double pi_approx;
 
   clock_gettime(CLOCK_MONOTONIC_RAW, &tick);
 
   for (int iter = 0; iter < iterations; iter++)
   {
     int rc;
-    pi_approx = 0.0;
+
+    for (int i = 0; i < num_threads; i++) {
+      sum_arr[i] = 0.0;
+    }
 
     // for a single iteration, run each computation in num_threads threads
     for (int i = 0; i < num_threads; i++)
@@ -81,6 +93,10 @@ int main(int argc, char *argv[])
     {
       pthread_join(threads[i], NULL);
     }
+
+    for (int i = 0; i < num_threads; i++) {
+      pi_approx += sum_arr[i];
+    }
   }
 
   clock_gettime(CLOCK_MONOTONIC_RAW, &tock);
@@ -88,7 +104,7 @@ int main(int argc, char *argv[])
 
   printf("-----%d threads-----\n", num_threads);
   printf("Avg elapsed time = %llu nanoseconds\n", (long long unsigned int)execTime / iterations);
-  printf("Final pi approximation (%d steps): %.20f\n", steps, pi_approx);
+  printf("Final pi approximation (%d steps): %.20f\n", steps, pi_approx / iterations);
 
   return EXIT_SUCCESS;
 }
