@@ -41,7 +41,7 @@ void *pi_approximation(void *arg)
 
   for (int i = thread_id; i < steps; i += num_threads)
   {
-    local_sum += step_size * f(x);
+    sum_arr[thread_id] += 2 * step_size * f(x);
     x += step_size * num_threads;
   }
 
@@ -50,7 +50,7 @@ void *pi_approximation(void *arg)
   // auto current = pi_approx.load();
   // while (!pi_approx.compare_exchange_weak(current, current + local_sum * 2));
   // pthread_mutex_unlock (&pi_mutex);
-  sum_arr[thread_id] = local_sum * 2;
+  // sum_arr[thread_id] = local_sum * 2;
 
 
   pthread_exit(NULL);

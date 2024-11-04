@@ -89,7 +89,28 @@ Final pi approximation (100000 steps): 3.13507174743814642781
 
 
 
------ part 6 - using false-sharing in arr_sum[] -----
+
+----- part 6 - eliminating both true and false sharing -----
+-----1 threads-----
+Avg elapsed time = 1584667 nanoseconds
+Final pi approximation (100000 steps): 3.13507174624903095506
+-----2 threads-----
+Avg elapsed time = 912613 nanoseconds
+Final pi approximation (100000 steps): 3.13507174777679020750
+-----4 threads-----
+Avg elapsed time = 670855 nanoseconds
+Final pi approximation (100000 steps): 3.13507174761296880661
+-----8 threads-----
+Avg elapsed time = 597702 nanoseconds
+Final pi approximation (100000 steps): 3.13507174728665871655
+-----16 threads-----
+Avg elapsed time = 1128016 nanoseconds
+Final pi approximation (100000 steps): 3.13507174743814642781
+
+
+
+
+----- part 7 - eliminating both true and false sharing -----
 
 -----1 threads-----
 Avg elapsed time = 909623 nanoseconds
