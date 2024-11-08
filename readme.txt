@@ -1,7 +1,13 @@
 project 5 for programming for performance cs377p
 
 
-run using `g++ -std=c++11 -o main main.cpp -lpthread`
+run using `g++ -std=c++11 -o main_xyz main_xyz.cpp -lpthread && ./main_xyz` where xyz is the version of main you want to run described below
+
+For example, `g++ -std=c++11 -o main_7 main_7.cpp -lpthread && ./main_7` for the version that eliminates true and false sharing using multithreading. 
+
+Be sure to adjust the number of threads for each compilation e.g. 1, 2, 4, 8, 16
+
+
 
 main_2. 
 1% approximation calculation for pi using semicircle
